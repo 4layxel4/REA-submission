@@ -1,0 +1,23 @@
+#!/bin/bash
+yum update -y
+yum install -y gcc
+yum install -y httpd
+service httpd start
+chkconfig httpd on
+groupadd www
+usermod -a -G www ec2-user
+chown -R root:www /var/www
+chmod 2775 /var/www
+find /var/www -type d -exec chmod 2775 {} +
+find /var/www -type f -exec chmod 0664 {} +
+gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+curl -sSL https://get.rvm.io | bash -s stable
+source /etc/profile.d/rvm.sh
+usermod -a -G rvm ec2-user
+rvm get head
+rvm install 2.6.5
+gem install sinatra
+wget https://github.com/rea-cruitment/simple-sinatra-app/archive/master.zip
+unzip master.zip
+bundle install
+ruby helloworld.rb -o 0.0.0.0 &

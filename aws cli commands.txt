@@ -1,0 +1,7 @@
+aws s3api create-bucket --bucket rea-sinatra-bucket --region ap-southeast-2 --create-bucket-configuration LocationConstraint=ap-southeast-2
+wget https://github.com/rea-cruitment/simple-sinatra-app/archive/master.zip
+aws s3 cp master.zip s3://rea-sinatra-bucket
+aws elasticbeanstalk check-dns-availability --cname-prefix REA-Sinatra
+aws elasticbeanstalk create-application --application-name REA-Sinatra
+aws elasticbeanstalk create-application-version --application-name REA-Sinatra --version-label v1 --source-bundle S3Bucket=rea-sinatra-bucket,S3Key=master.zip
+aws elasticbeanstalk create-environment --cname-prefix REA-Sinatra --application-name REA-Sinatra --version-label v1 --environment-name REA-Sinatra-env --solution-stack-name "64bit Amazon Linux 2018.03 v2.11.0 running Ruby 2.6 (Passenger Standalone)" --option-settings Namespace="aws:autoscaling:launchconfiguration",OptionName=EC2KeyName,Value=MyKeyPair_1
